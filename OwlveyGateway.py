@@ -126,75 +126,28 @@ class OwlveyGateway:
     def get_source_anchor(self, source_id):
         return self.__internal_get(self.host + "/sources/{}/anchor".format(source_id))
 
-    def create_source_availability_interaction(self, product_id, name,
-                      good_definition: str = "", total_definition: str = ""):
+    def create_source(self, product_id, name,
+                                               availability_good_definition: str = "",
+                                               availability_total_definition: str = "",
+                                               latency_good_definition: str = "",
+                                               latency_total_definition: str = "",
+                                               experience_good_definition: str = "",
+                                               experience_total_definition: str = "",
+                                               ):
         result = self.__internal_post(self.host + "/sources",
                                     {
                                         "productId": product_id,
-                                        "name": name,
-                                        "kind": 'Interaction',
-                                        "group": 'Availability'
+                                        "name": name
                                     })
 
-        result["goodDefinition"] = good_definition
-        result["totalDefinition"] = total_definition
+        result["AvailabilityGoodDefinition"] = availability_good_definition
+        result["AvailabilityTotalDefinition"] = availability_total_definition
+        result["LatencyGoodDefinition"] = latency_good_definition
+        result["LatencyTotalDefinition"] = latency_total_definition
+        result["ExperienceGoodDefinition"] = experience_good_definition
+        result["ExperienceTotalDefinition"] = experience_total_definition
 
-        self.__internal_put(self.host + "/sources/availability/{}".format(result["id"]), result)
-
-        return result
-
-    def create_source_experience_interaction(self, product_id, name,
-                                          good_definition: str = "", total_definition: str = ""):
-
-        result = self.__internal_post(self.host + "/sources",
-                                    {
-                                        "productId": product_id,
-                                        "name": name,
-                                        "kind": 'Interaction',
-                                        "group": 'Experience'
-                                    })
-
-        result["goodDefinition"] = good_definition
-        result["totalDefinition"] = total_definition
-
-        self.__internal_put(self.host + "/sources/experience/{}".format(result["id"]), result)
-
-        return result
-
-    def create_source_latency(self, product_id, name,
-                              good_definition: str = "",
-                              total_definition: str = ""):
-        result = self.__internal_post(self.host + "/sources",
-                                    {
-                                        "productId": product_id,
-                                        "name": name,
-                                        "kind": 'Interaction',
-                                        "group": 'Latency'
-                                    })
-
-        result["goodDefinition"] = good_definition
-        result["totalDefinition"] = total_definition
-        self.__internal_put(self.host + "/sources/latency/{}".format(result["id"]), result)
-        return result
-
-    def create_source(self, product_id, name, kind, group,
-                      good_definition: str = "", total_definition: str = ""):
-        result = self.__internal_post(self.host + "/sources",
-                                    {
-                                        "productId": product_id,
-                                        "name": name,
-                                        "kind": kind,
-                                        "group": group
-                                    })
-
-        result["goodDefinition"] = good_definition
-        result["totalDefinition"] = total_definition
-
-        if group =="Availability":
-            self.__internal_put(self.host + "/sources/availability/{}".format(result["id"]), result)
-
-
-
+        self.__internal_put(self.host + "/sources/{}".format(result["id"]), result)
 
         return result
 

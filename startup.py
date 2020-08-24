@@ -21,23 +21,21 @@ def build_url(target: str):
         return target
 
 
-def build_feature(gateway, product, node, feature_root, availability, latency, experience):
+def build_feature(gateway, product, node, feature_root, sources):
     if "_postman_isSubFolder" not in node:
         feature = gateway.create_feature(product["id"], feature_root.lstrip(" "))
         key_method = node["request"]["method"]
         key_url = build_url(node["request"]["url"]["raw"])
         key_media = find_content_type(node)
         key = "{}:{}:{}".format(key_method, key_url, key_media)
-        if key not in availability:
-            availability[key] = gateway.create_source_availability_interaction(product["id"], key)
+        if key not in sources:
+            sources[key] = gateway.create_source(product["id"], key)
 
-        gateway.create_sli(feature["id"], availability[key]["id"])
-        #gateway.create_sli(feature["id"], latency[key]["id"])
-        #gateway.create_sli(feature["id"], experience[key]["id"])
+        gateway.create_sli(feature["id"], sources[key]["id"])
         return
     else:
         for item in node["item"]:
-            build_feature(gateway,product, item, feature_root + " " + node["name"], availability, latency, experience)
+            build_feature(gateway,product, item, feature_root + " " + node["name"], sources)
 
 
 if __name__ == "__main__":
@@ -55,11 +53,9 @@ if __name__ == "__main__":
 
     for item in metadata["item"]:
         product = gateway.create_product(organization["id"], item["name"])
-        availability = dict()
-        latency = dict()
-        experience = dict()
+        sources = dict()
         for fitem in item["item"]:
-            build_feature(gateway, product, fitem, "", availability, latency, experience)
+            build_feature(gateway, product, fitem, "", sources)
 
 
 
